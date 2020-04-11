@@ -21,24 +21,28 @@ def data(code,value):
 
 
 @app.route('/')
-def test():
-    return render_template('login.html')
+def home():
+    if not session.get('logged_in'):
+        return render_template('login.html')
+    else:
+        liste=[]
+        codes=["MA","FR","IT","DE","ES","DZ","TR","US","CN","CA","EG","IN","IR","IL","JP","LY"]
+        countries=["MAROC","FRANCE","ITALIE","ALLEMAGNE","ESPAGNE","ALGERIE","TURQUIE","ETATS-UNIES","CHINE","CANADA","EGYPTE","INDE","IRAN","ISRAEL","JAPON","LIBYE"]
+        for i,j in zip(countries,codes):
+            liste.append(data(i,corona(j)))
+        return render_template('index.html',ma=liste)
+        
 
     
-@app.route('/auth', methods=['POST'])
-def check_hostname():
+@app.route('/login', methods=['POST'])
+def check_credential():
     email =    request.form['username']
     password = request.form['pass']
     if email=="khalid" and password=="C0ron@":
-        #value=corona("MA")
-        liste=[]
-        codes=["MA","FR","IT","DE","ES"]
-        countries=["MAROC","FRANCE","ITALIE","ALLEMAGNE","ESPAGNE"]
-        for i,j in zip(countries,codes):
-            liste.append(data(i,corona(j)))
-        #liste=liste.replace("'",'"')
-        print(liste)
-        return render_template('index.html',ma=liste)
+        session['logged_in']=True
+    else:
+        flash('wrong password!')
+    return home()
 if __name__ == '__main__':
     app.secret_key = os.urandom(12)
     app.run(host='0.0.0.0', port=3030)
