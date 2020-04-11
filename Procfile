@@ -1,0 +1,1 @@
+web: Coronavirus app:app
